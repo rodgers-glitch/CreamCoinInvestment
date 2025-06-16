@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CreamCoinInvestment</title>
+  <style>
+    :root {
+      --green: #25D366;
+      --dark: #075e54;
+      --light: #f4f4f4;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--light);
+      color: #333;
+    }
+
+    header {
+      background: var(--dark);
+      color: white;
+      padding: 1em;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: var(--green);
+    }
+
+    nav a {
+      padding: 0.8em;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      background: var(--dark);
+    }
+
+    .container {
+      padding: 1em;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 1em;
+      margin: 1em 0;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    input, button, select {
+      width: 100%;
+      padding: 0.7em;
+      margin-top: 0.5em;
+      margin-bottom: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background: var(--green);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: var(--dark);
+    }
+
+    footer {
+      background: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 1em;
+      margin-top: 2em;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 1em;
+    }
+
+    @media (min-width: 600px) {
+      .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>CreamCoinInvestment</h1>
+  <p>Invest in dairy farming, earn 40% profit!</p>
+</header>
+
+<nav>
+  <a href="#">Home</a>
+  <a href="#">About</a>
+  <a href="#" onclick="showProfile()">Profile</a>
+  <a href="#">Dashboard</a>
+  <a href="#">Support</a>
+  <a href="#">Contact</a>
+</nav>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Register</h2>
+    <input type="text" id="regName" placeholder="Your Full Name" />
+    <input type="email" id="regEmail" placeholder="Email Address" />
+    <input type="text" id="regPhone" placeholder="Phone Number" />
+    <input type="password" id="regPassword" placeholder="Password" />
+    <input type="text" id="regReferral" placeholder="Referral Phone (Optional)" />
+    <button onclick="register()">Register</button>
+  </div>
+
+  <div class="card">
+    <h2>Login</h2>
+    <input type="text" id="loginPhone" placeholder="Phone Number" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div class="card" id="dashboard" style="display:none;">
+    <h2>Welcome, <span id="userName"></span></h2>
+    <div class="dashboard">
+      <div class="card">
+        <strong>Choose Plan:</strong>
+        <select id="investmentPlan">
+          <option value="">Select a Plan</option>
+          <option value="1000">Ksh 1,000</option>
+          <option value="2000">Ksh 2,000</option>
+          <option value="3500">Ksh 3,500</option>
+          <option value="5000">Ksh 5,000</option>
+          <option value="10000">Ksh 10,000</option>
+        </select>
+        <button onclick="activatePlan()">Activate Plan</button>
+      </div>
+      <div class="card">
+        <p><strong>Investment:</strong> Ksh <span id="invested">0</span></p>
+        <p><strong>40% Profit:</strong> Ksh <span id="profit">0</span></p>
+        <p><strong>Referral Bonus:</strong> Ksh <span id="refBonus">0</span></p>
+      </div>
+      <div class="card">
+        <p><strong>Withdraw:</strong> (Min Ksh 200)</p>
+        <button onclick="withdraw()">Withdraw</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="profilePage" style="display:none;">
+    <h2>About You</h2>
+    <p><strong>Full Name:</strong> <span id="profileName"></span></p>
+    <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+    <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+    <button onclick="toggleEditProfile()">Edit Profile</button>
+  </div>
+
+  <div class="card" id="editProfilePage" style="display:none;">
+    <h2>Edit Profile</h2>
+    <input type="text" id="editName" />
+    <input type="email" id="editEmail" />
+    <input type="text" id="editPhone" />
+    <button onclick="saveProfileChanges()">Save Changes</button>
+  </div>
+
+  <div class="card">
+    <h2>Support & Contact</h2>
+    <p>Email: <a href="mailto:rodgersk072@gmail.com">rodgersk072@gmail.com</a></p>
+    <p>WhatsApp: <a href="https://wa.me/254799881732" target="_blank">+254799881732</a></p>
+    <p>Facebook: <a href="https://facebook.com/CreamCoinKE" target="_blank">CreamCoin KE</a></p>
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2025 CreamCoinInvestment. All rights reserved.</p>
+</footer>
+
+<script>
+  let users = JSON.parse(localStorage.getItem('creamUsers')) || [];
+  let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+  function register() {
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const phone = document.getElementById('regPhone').value;
+    const password = document.getElementById('regPassword').value;
+    const ref = document.getElementById('regReferral').value;
+
+    if (users.find(u => u.phone === phone)) {
+      alert("User already exists!");
+      return;
+    }
+
+    const newUser = {
+      name, email, phone, password,
+      invested: 0,
+      profit: 0,
+      refBonus: 0,
+      referredBy: ref || null,
+      hasWithdrawn: false
+    };
+
+    users.push(newUser);
+    localStorage.setItem('creamUsers', JSON.stringify(users));
+    alert("Registered successfully! Now login.");
+  }
+
+  function login() {
+    const phone = document.getElementById('loginPhone').value;
+    const password = document.getElementById('loginPassword').value;
+    const user = users.find(u => u.phone === phone && u.password === password);
+
+    if (user) {
+      currentUser = user;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      showDashboard();
+    } else {
+      alert("Invalid login!");
+    }
+  }
+
+  function showDashboard() {
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('userName').innerText = currentUser.name;
+    document.getElementById('invested').innerText = currentUser.invested;
+    document.getElementById('profit').innerText = currentUser.profit;
+    document.getElementById('refBonus').innerText = currentUser.refBonus;
+  }
+
+  function activatePlan() {
+    const plan = parseInt(document.getElementById('investmentPlan').value);
+    if (!plan) return alert("Choose a plan");
+
+    const today = new Date().getDay();
+    if (today === 6 || today === 0) return alert("No transactions on weekends!");
+
+    alert(`MPESA Prompt: Please approve the payment of Ksh ${plan}.`);
+
+    currentUser
